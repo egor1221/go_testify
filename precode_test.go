@@ -22,7 +22,7 @@ func TestMainHandlerWhenOK(t *testing.T) {
 }
 func TestMainHandlerWhenCountMoreThanTotal(t *testing.T) {
     totalCount := 4
-    req := httptest.NewRequest("GET", "/cafe?count=2&city=moscow", nil)
+    req := httptest.NewRequest("GET", "/cafe?count=1&city=moscow", nil)
 
     responseRecorder := httptest.NewRecorder()
     handler := http.HandlerFunc(mainHandle)
@@ -32,12 +32,8 @@ func TestMainHandlerWhenCountMoreThanTotal(t *testing.T) {
 	body := responseRecorder.Body.String()
     list := strings.Split(body, ",")
 
-    if len(list) < totalCount {
-        totalCount = len(list)
-    }
-
 	assert.NotEmpty(t, body)
-	assert.Equal(t, len(list), totalCount)
+	assert.LessOrEqual(t, len(list), totalCount)
 }
 
 func TestMainHandlerWhenAnotherCity(t *testing.T) {
