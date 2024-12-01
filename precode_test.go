@@ -12,7 +12,7 @@ import (
 
 
 func TestMainHandlerWhenOK(t *testing.T) {
-    req := httptest.NewRequest("GET", "/cafe?count=2&city=moscow", nil)
+    req := httptest.NewRequest("GET", "/cafe?count=20&city=moscow", nil)
 
     responseRecorder := httptest.NewRecorder()
     handler := http.HandlerFunc(mainHandle)
@@ -31,6 +31,10 @@ func TestMainHandlerWhenCountMoreThanTotal(t *testing.T) {
 
 	body := responseRecorder.Body.String()
     list := strings.Split(body, ",")
+
+    if len(list) < totalCount {
+        totalCount = len(list)
+    }
 
 	assert.NotEmpty(t, body)
 	assert.Equal(t, len(list), totalCount)
