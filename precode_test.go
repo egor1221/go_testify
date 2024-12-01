@@ -10,22 +10,30 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestMainHandlerWhenCountMoreThanTotal(t *testing.T) {
-    totalCount := 4
-    req := httptest.NewRequest("GET", "/cafe?count=10&city=moscow", nil)
+
+func TestMainHandlerWhenOK(t *testing.T) {
+    req := httptest.NewRequest("GET", "/cafe?count=2&city=moscow", nil)
 
     responseRecorder := httptest.NewRecorder()
     handler := http.HandlerFunc(mainHandle)
     handler.ServeHTTP(responseRecorder, req)
 
-	require.Equal(t, responseRecorder.Code, http.StatusOK)
+    require.Equal(t, responseRecorder.Code, http.StatusOK)
+}
+func TestMainHandlerWhenCountMoreThanTotal(t *testing.T) {
+    totalCount := 4
+    req := httptest.NewRequest("GET", "/cafe?count=2&city=moscow", nil)
 
-    // здесь нужно добавить необходимые проверки
+    responseRecorder := httptest.NewRecorder()
+    handler := http.HandlerFunc(mainHandle)
+    handler.ServeHTTP(responseRecorder, req)
+
+
 	body := responseRecorder.Body.String()
     list := strings.Split(body, ",")
 
 	assert.NotEmpty(t, body)
-	assert.Len(t, list, totalCount)
+	assert.Equal(t, len(list), totalCount)
 }
 
 func TestMainHandlerWhenAnotherCity(t *testing.T) {
@@ -36,9 +44,6 @@ func TestMainHandlerWhenAnotherCity(t *testing.T) {
     handler := http.HandlerFunc(mainHandle)
     handler.ServeHTTP(responseRecorder, req)
 
-	require.Equal(t, responseRecorder.Code, http.StatusOK)
-
-    // здесь нужно добавить необходимые проверки
     city := req.URL.Query().Get("city")
 
 	assert.Equal(t, city, actualCity)
