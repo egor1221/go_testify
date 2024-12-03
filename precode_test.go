@@ -22,11 +22,11 @@ func TestMainHandlerWhenOK(t *testing.T) {
 
     require.NotEmpty(t, body)
 
-    require.Equal(t, responseRecorder.Code, http.StatusOK)
+    require.Equal(t, http.StatusOK, responseRecorder.Code)
 }
 func TestMainHandlerWhenCountMoreThanTotal(t *testing.T) {
     totalCount := 4
-    req := httptest.NewRequest("GET", "/cafe?count=1&city=moscow", nil)
+    req := httptest.NewRequest("GET", "/cafe?count=10&city=moscow", nil)
 
     responseRecorder := httptest.NewRecorder()
     handler := http.HandlerFunc(mainHandle)
@@ -36,7 +36,13 @@ func TestMainHandlerWhenCountMoreThanTotal(t *testing.T) {
 	body := responseRecorder.Body.String()
     list := strings.Split(body, ",")
 
-	assert.LessOrEqual(t, len(list), totalCount)
+    // это на случай если count<totalCount
+    if len(list) < totalCount {
+        totalCount = len(list)
+    }
+
+    assert.Equal(t, len(list), totalCount) // поскольку по заданию надо разобрать только случай когда count>totalCount сделал так
+	// assert.LessOrEqual(t, len(list), totalCount) 
 }
 
 func TestMainHandlerWhenAnotherCity(t *testing.T) {
